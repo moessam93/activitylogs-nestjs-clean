@@ -3,7 +3,10 @@ import { MongooseModule, getModelToken } from '@nestjs/mongoose';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { Model } from 'mongoose';
 import databaseConfig from './database.config';
-import { ActivityLogSchema, ActivityLogDocument } from './schemas/activitylog.schema';
+import {
+  ActivityLogSchema,
+  ActivityLogDocument,
+} from './schemas/activitylog.schema';
 import { BaseMongooseRepository } from './base-mongoose.repository';
 import { ActivityLogMapper } from './mappers/activitylog.mapper';
 import { ActivityLog } from '../../../domain/entities/activityLog';
@@ -29,12 +32,13 @@ import { ActivityLog } from '../../../domain/entities/activityLog';
       provide: 'IActivityLogRepository',
       useFactory: (
         activityLogModel: Model<ActivityLogDocument>,
-        activityLogMapper: ActivityLogMapper
+        activityLogMapper: ActivityLogMapper,
       ) => {
-        return new BaseMongooseRepository<ActivityLog, string, ActivityLogDocument>(
-          activityLogModel,
-          activityLogMapper
-        );
+        return new BaseMongooseRepository<
+          ActivityLog,
+          string,
+          ActivityLogDocument
+        >(activityLogModel, activityLogMapper);
       },
       inject: [getModelToken('ActivityLog'), ActivityLogMapper],
     },

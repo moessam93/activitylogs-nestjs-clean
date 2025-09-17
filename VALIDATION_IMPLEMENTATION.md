@@ -1,67 +1,74 @@
 # Validation Implementation
 
 ## Overview
+
 Comprehensive validation system using `class-validator` and `class-transformer` packages.
 
 ## Global Validation Setup
 
 ### Main Application (`src/main.ts`)
+
 ```typescript
-app.useGlobalPipes(new ValidationPipe({
-  transform: true,          // Auto-transform request data
-  whitelist: true,          // Strip unknown properties
-  forbidNonWhitelisted: true, // Reject requests with unknown properties
-}));
+app.useGlobalPipes(
+  new ValidationPipe({
+    transform: true, // Auto-transform request data
+    whitelist: true, // Strip unknown properties
+    forbidNonWhitelisted: true, // Reject requests with unknown properties
+  }),
+);
 ```
 
 ## Current Validation Rules
 
 ### CreateActivityLogDto
+
 ```typescript
 export class CreateActivityLogDto {
   @IsNotEmpty()
   @IsString()
-  entityType: string;           // Required string
-
-  @IsNotEmpty()
-  @IsString() 
-  entityId: string;            // Required string
-
-  @IsOptional()
-  fieldKey?: any;              // Optional, any JSON type
-
-  @IsOptional()
-  fieldValueBefore?: any;      // Optional, any JSON type
-
-  @IsOptional()
-  fieldValueAfter?: any;       // Optional, any JSON type
+  entityType: string; // Required string
 
   @IsNotEmpty()
   @IsString()
-  createdById: string;         // Required string
+  entityId: string; // Required string
+
+  @IsOptional()
+  fieldKey?: any; // Optional, any JSON type
+
+  @IsOptional()
+  fieldValueBefore?: any; // Optional, any JSON type
+
+  @IsOptional()
+  fieldValueAfter?: any; // Optional, any JSON type
 
   @IsNotEmpty()
   @IsString()
-  createdByName: string;       // Required string
+  createdById: string; // Required string
+
+  @IsNotEmpty()
+  @IsString()
+  createdByName: string; // Required string
 
   @IsNotEmpty()
   @IsEnum(ActionType)
-  action: ActionType;          // Required enum: POST, PUT, DELETE
+  action: ActionType; // Required enum: POST, PUT, DELETE
 }
 ```
 
 ## ActionType Enum Validation
 
 ### Definition (`src/domain/entities/activityLog.ts`)
+
 ```typescript
 export enum ActionType {
   POST = 'POST',
-  PUT = 'PUT', 
-  DELETE = 'DELETE'
+  PUT = 'PUT',
+  DELETE = 'DELETE',
 }
 ```
 
 ### Usage
+
 - **Valid values**: `"POST"`, `"PUT"`, `"DELETE"`
 - **Case sensitive**: Must match exactly
 - **Automatic validation**: Rejects any other values
@@ -77,6 +84,7 @@ export enum ActionType {
 ## Error Response Format
 
 Invalid requests return structured error responses:
+
 ```json
 {
   "statusCode": 400,
@@ -92,17 +100,19 @@ Invalid requests return structured error responses:
 ## Example Valid Requests
 
 ### Minimal Request
+
 ```json
 {
   "entityType": "user",
   "entityId": "123456",
-  "createdById": "admin_001", 
+  "createdById": "admin_001",
   "createdByName": "System Admin",
   "action": "POST"
 }
 ```
 
 ### Complete Request
+
 ```json
 {
   "entityType": "influencer",
@@ -111,12 +121,13 @@ Invalid requests return structured error responses:
   "fieldValueBefore": "old_username",
   "fieldValueAfter": "new_username",
   "createdById": "admin_001",
-  "createdByName": "System Admin", 
+  "createdByName": "System Admin",
   "action": "PUT"
 }
 ```
 
 ### Complex Data Types
+
 ```json
 {
   "entityType": "product",
@@ -127,7 +138,7 @@ Invalid requests return structured error responses:
     "size": "medium"
   },
   "fieldValueAfter": {
-    "color": "blue", 
+    "color": "blue",
     "size": "large",
     "material": "cotton"
   },
@@ -139,12 +150,12 @@ Invalid requests return structured error responses:
 
 ## Validation Decorators Reference
 
-| Decorator | Purpose | Usage |
-|-----------|---------|-------|
-| `@IsNotEmpty()` | Requires non-empty value | Required fields |
-| `@IsString()` | Validates string type | String fields |
-| `@IsEnum(ActionType)` | Validates enum values | Action field |
-| `@IsOptional()` | Allows undefined/null | Optional fields |
+| Decorator             | Purpose                  | Usage           |
+| --------------------- | ------------------------ | --------------- |
+| `@IsNotEmpty()`       | Requires non-empty value | Required fields |
+| `@IsString()`         | Validates string type    | String fields   |
+| `@IsEnum(ActionType)` | Validates enum values    | Action field    |
+| `@IsOptional()`       | Allows undefined/null    | Optional fields |
 
 ## Future Enhancements
 

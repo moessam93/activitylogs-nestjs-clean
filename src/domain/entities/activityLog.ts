@@ -1,7 +1,7 @@
 export enum ActionType {
   POST = 'POST',
   PUT = 'PUT',
-  DELETE = 'DELETE'
+  DELETE = 'DELETE',
 }
 
 export class ActivityLog {

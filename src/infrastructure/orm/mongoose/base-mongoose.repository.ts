@@ -8,7 +8,7 @@ export class BaseMongooseRepository<TEntity, TId, TDocument extends Document>
 {
   constructor(
     protected readonly model: Model<TDocument>,
-    protected readonly mapper: IBaseMapper<TEntity, TDocument>
+    protected readonly mapper: IBaseMapper<TEntity, TDocument>,
   ) {}
 
   protected buildQuery(spec?: BaseSpecification<TEntity>): any {
@@ -18,17 +18,21 @@ export class BaseMongooseRepository<TEntity, TId, TDocument extends Document>
 
     // Convert specification criteria to MongoDB query
     const query: any = {};
-    
+
     spec.criteria.forEach((criterion) => {
       Object.keys(criterion).forEach((key) => {
         const value = criterion[key];
-        
+
         if (typeof value === 'object' && value !== null) {
           // Handle complex queries
-          if (value.lt !== undefined) query[key] = { ...query[key], $lt: value.lt };
-          if (value.lte !== undefined) query[key] = { ...query[key], $lte: value.lte };
-          if (value.gt !== undefined) query[key] = { ...query[key], $gt: value.gt };
-          if (value.gte !== undefined) query[key] = { ...query[key], $gte: value.gte };
+          if (value.lt !== undefined)
+            query[key] = { ...query[key], $lt: value.lt };
+          if (value.lte !== undefined)
+            query[key] = { ...query[key], $lte: value.lte };
+          if (value.gt !== undefined)
+            query[key] = { ...query[key], $gt: value.gt };
+          if (value.gte !== undefined)
+            query[key] = { ...query[key], $gte: value.gte };
           if (value.in !== undefined) query[key] = { $in: value.in };
           if (value.notIn !== undefined) query[key] = { $nin: value.notIn };
           if (value.contains !== undefined) {
@@ -42,7 +46,9 @@ export class BaseMongooseRepository<TEntity, TId, TDocument extends Document>
           }
           if (value.not !== undefined) query[key] = { $ne: value.not };
           if (value.isSet !== undefined) {
-            query[key] = value.isSet ? { $exists: true, $ne: null } : { $exists: false };
+            query[key] = value.isSet
+              ? { $exists: true, $ne: null }
+              : { $exists: false };
           }
         } else {
           // Simple equality
@@ -62,7 +68,9 @@ export class BaseMongooseRepository<TEntity, TId, TDocument extends Document>
     return query;
   }
 
-  protected buildSort(spec?: BaseSpecification<TEntity>): Record<string, 1 | -1> {
+  protected buildSort(
+    spec?: BaseSpecification<TEntity>,
+  ): Record<string, 1 | -1> {
     if (!spec?.orderBy || spec.orderBy.length === 0) {
       return {};
     }
@@ -71,17 +79,17 @@ export class BaseMongooseRepository<TEntity, TId, TDocument extends Document>
     spec.orderBy.forEach((order) => {
       sort[order.field as string] = order.direction === 'asc' ? 1 : -1;
     });
-    
+
     return sort;
   }
 
   async findMany(spec?: BaseSpecification<TEntity>): Promise<TEntity[]> {
     const query = this.model.find(this.buildQuery(spec));
-    
+
     if (spec?.orderBy) {
       query.sort(this.buildSort(spec));
     }
-    
+
     if (spec?.pagination) {
       const { skip, take, page, limit } = spec.pagination;
       if (skip !== undefined) query.skip(skip);
@@ -92,7 +100,7 @@ export class BaseMongooseRepository<TEntity, TId, TDocument extends Document>
     }
 
     const documents = await query.exec();
-    return documents.map(doc => this.mapper.toEntity(doc as TDocument));
+    return documents.map((doc) => this.mapper.toEntity(doc as TDocument));
   }
 
   async findOne(spec: BaseSpecification<TEntity>): Promise<TEntity | null> {
@@ -118,15 +126,15 @@ export class BaseMongooseRepository<TEntity, TId, TDocument extends Document>
   async update(entity: TEntity): Promise<TEntity> {
     const documentData = this.mapper.toDocument(entity);
     const id = this.mapper.extractId(entity);
-    
+
     const updatedDocument = await this.model
       .findByIdAndUpdate(id, documentData, { new: true })
       .exec();
-    
+
     if (!updatedDocument) {
       throw new Error(`Entity with id ${id} not found`);
     }
-    
+
     return this.mapper.toEntity(updatedDocument);
   }
 
@@ -135,23 +143,27 @@ export class BaseMongooseRepository<TEntity, TId, TDocument extends Document>
   }
 
   async createMany(entities: TEntity[]): Promise<TEntity[]> {
-    const documents = entities.map(entity => this.mapper.toDocument(entity));
+    const documents = entities.map((entity) => this.mapper.toDocument(entity));
     const savedDocuments = await this.model.insertMany(documents);
-    return savedDocuments.map(doc => this.mapper.toEntity(doc as unknown as TDocument));
+    return savedDocuments.map((doc) =>
+      this.mapper.toEntity(doc as unknown as TDocument),
+    );
   }
 
   async updateMany(entities: TEntity[]): Promise<TEntity[]> {
-    const updateOperations = entities.map(entity => {
+    const updateOperations = entities.map((entity) => {
       const id = this.mapper.extractId(entity);
       const documentData = this.mapper.toDocument(entity);
-      
-      return this.model.findByIdAndUpdate(id, documentData, { new: true }).exec();
+
+      return this.model
+        .findByIdAndUpdate(id, documentData, { new: true })
+        .exec();
     });
 
     const updatedDocuments = await Promise.all(updateOperations);
     return updatedDocuments
-      .filter(doc => doc !== null)
-      .map(doc => this.mapper.toEntity(doc!));
+      .filter((doc) => doc !== null)
+      .map((doc) => this.mapper.toEntity(doc!));
   }
 
   async deleteMany(ids: TId[]): Promise<void> {
@@ -173,5 +185,4 @@ export class BaseMongooseRepository<TEntity, TId, TDocument extends Document>
       totalFiltered,
     };
   }
-
 }

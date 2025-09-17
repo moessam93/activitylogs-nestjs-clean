@@ -1,10 +1,15 @@
 import { Injectable } from '@nestjs/common';
-import { ActivityLog, ActionType } from '../../../../domain/entities/activityLog';
+import {
+  ActivityLog,
+  ActionType,
+} from '../../../../domain/entities/activityLog';
 import { ActivityLogDocument } from '../schemas/activitylog.schema';
 import { IBaseMapper } from './base.mapper.interface';
 
 @Injectable()
-export class ActivityLogMapper implements IBaseMapper<ActivityLog, ActivityLogDocument> {
+export class ActivityLogMapper
+  implements IBaseMapper<ActivityLog, ActivityLogDocument>
+{
   toEntity(document: ActivityLogDocument): ActivityLog {
     return {
       id: document._id.toString(),

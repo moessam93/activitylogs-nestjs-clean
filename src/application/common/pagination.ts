@@ -22,10 +22,10 @@ export function createPaginationMeta(
   page: number,
   limit: number,
   total: number,
-  totalFiltered: number = total
+  totalFiltered: number = total,
 ): PaginationMeta {
   const totalPages = Math.ceil(totalFiltered / limit);
-  
+
   return {
     page,
     limit,

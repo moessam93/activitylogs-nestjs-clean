@@ -7,13 +7,16 @@ async function bootstrap() {
   app.setGlobalPrefix('api');
 
   // Enable validation globally
-  app.useGlobalPipes(new ValidationPipe({
-    transform: true,
-    whitelist: true,
-    forbidNonWhitelisted: true,
-  }));
-  
 
+  app.useGlobalPipes(
+    new ValidationPipe({
+      transform: true,
+      whitelist: true,
+      forbidNonWhitelisted: true,
+    }),
+  );
   await app.listen(process.env.PORT ?? 5000);
 }
-bootstrap();
+bootstrap().catch((error) =>
+  console.error('Error starting application:', error),
+);

@@ -1,9 +1,11 @@
 # Mongoose Setup Documentation
 
 ## Overview
+
 This document describes the Mongoose integration implemented in the NestJS clean architecture project for ActivityLogs.
 
 ## Installed Packages
+
 - `mongoose`: MongoDB object modeling for Node.js
 - `@nestjs/mongoose`: NestJS integration for Mongoose
 - `@nestjs/config`: Configuration management for NestJS
@@ -57,6 +59,7 @@ This document describes the Mongoose integration implemented in the NestJS clean
 ## Environment Configuration
 
 Create a `.env` file in the project root:
+
 ```env
 DATABASE_URI=mongodb://localhost:27017/activitylogs
 PORT=3000
@@ -65,6 +68,7 @@ PORT=3000
 ## Features Implemented
 
 ### Base Repository Features
+
 - **CRUD Operations**: Create, Read, Update, Delete
 - **Batch Operations**: CreateMany, UpdateMany, DeleteMany
 - **Specification Pattern**: Complex queries using domain specifications
@@ -74,7 +78,9 @@ PORT=3000
 - **Filtering**: Complex filtering with various operators
 
 ### MongoDB Query Translation
+
 The base repository translates domain specifications to MongoDB queries:
+
 - `whereEqual` → `{ field: value }`
 - `whereGreaterThan` → `{ field: { $gt: value } }`
 - `whereContains` → `{ field: { $regex: /value/i } }`
@@ -111,6 +117,7 @@ const results = await activityLogRepository.list(spec);
 ## Database Schema
 
 The ActivityLog collection includes the following fields:
+
 - `action`: String enum (POST, PUT, DELETE)
 - `entityType`: String (user, beat, influencer, brand)
 - `entityId`: String
@@ -122,6 +129,7 @@ The ActivityLog collection includes the following fields:
 - `createdAt`: Date (auto-generated)
 
 Indexes are created on:
+
 - `entityType` and `entityId` (compound index)
 - `createdAt` (descending)
 - `createdById`

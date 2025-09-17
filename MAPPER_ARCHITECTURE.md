@@ -1,11 +1,13 @@
 # Mapper-Based Repository Architecture
 
 ## Overview
+
 This document describes the refactored repository architecture using the mapper pattern instead of concrete repository implementations per entity.
 
 ## Architecture Changes
 
 ### Before (Concrete Repository per Entity)
+
 ```
 base-mongoose.repository.ts (abstract)
 └── repositories/
@@ -13,6 +15,7 @@ base-mongoose.repository.ts (abstract)
 ```
 
 ### After (Mapper-Based Architecture)
+
 ```
 base-mongoose.repository.ts (concrete, uses mappers)
 └── mappers/
@@ -31,6 +34,7 @@ base-mongoose.repository.ts (concrete, uses mappers)
 ## Implementation Details
 
 ### Base Mapper Interface (`base.mapper.interface.ts`)
+
 ```typescript
 export interface IBaseMapper<TEntity, TDocument extends Document> {
   toEntity(document: TDocument): TEntity;
@@ -40,15 +44,20 @@ export interface IBaseMapper<TEntity, TDocument extends Document> {
 ```
 
 ### Entity Mapper Implementation
+
 Each entity has a dedicated mapper that implements the base interface:
+
 - `ActivityLogMapper` handles ActivityLog ↔ ActivityLogDocument mapping
 
 ### Base Repository Usage
+
 The `BaseMongooseRepository` is now a concrete class that accepts:
+
 - A Mongoose model
 - A mapper implementation
 
 ### Dependency Injection Configuration
+
 ```typescript
 {
   provide: 'IActivityLogRepository',
@@ -63,6 +72,7 @@ The `BaseMongooseRepository` is now a concrete class that accepts:
 ```
 
 ## Directory Structure
+
 ```
 src/infrastructure/orm/mongoose/
 ├── base-mongoose.repository.ts      # Generic repository implementation
@@ -104,32 +114,36 @@ await this.activityLogRepository.list(specification);
 ## Mapper Responsibilities
 
 ### Entity to Document (`toDocument`)
+
 - Remove or transform entity-specific fields (like `id`)
 - Prepare data for MongoDB storage
 - Handle nested object transformations
 
 ### Document to Entity (`toEntity`)
+
 - Convert MongoDB `_id` to entity `id`
 - Transform database-specific fields to domain model
 - Ensure proper typing and structure
 
 ### ID Extraction (`extractId`)
+
 - Extract identifier from entity for update/delete operations
 - Handle different ID formats (string, ObjectId, etc.)
 
 ## Testing Strategy
 
 ### Mapper Testing
+
 ```typescript
 describe('ActivityLogMapper', () => {
   it('should map document to entity', () => {
     // Test toEntity method
   });
-  
+
   it('should map entity to document', () => {
     // Test toDocument method
   });
-  
+
   it('should extract ID from entity', () => {
     // Test extractId method
   });
@@ -137,6 +151,7 @@ describe('ActivityLogMapper', () => {
 ```
 
 ### Repository Testing
+
 - Test with mock mappers
 - Focus on query building and MongoDB operations
 - Verify mapper methods are called correctly

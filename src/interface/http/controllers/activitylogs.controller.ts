@@ -1,4 +1,7 @@
-import { Controller, Post, Body, Get, Query, UsePipes, ValidationPipe } from '@nestjs/common';
+/* eslint-disable @typescript-eslint/no-unused-vars */
+/* eslint-disable @typescript-eslint/require-await */
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
+import { Controller, Post, Body, Get, Query } from '@nestjs/common';
 import { AddActivityLogUseCase } from '../../../application/use-cases/add-activitylog.usecase';
 import { ActivityLog } from '../../../domain/entities/activityLog';
 import { CreateActivityLogDto } from '../../validation/activitylog.dto';
@@ -9,7 +12,9 @@ export class ActivityLogsController {
   constructor(private readonly addActivityLogUseCase: AddActivityLogUseCase) {}
 
   @Post()
-  async create(@Body() activityLog: CreateActivityLogDto): Promise<ActivityLog> {
+  async create(
+    @Body() activityLog: CreateActivityLogDto,
+  ): Promise<ActivityLog> {
     const createActivityLogInput = new CreateActivityLogInput();
     createActivityLogInput.entityType = activityLog.entityType;
     createActivityLogInput.entityId = activityLog.entityId;
@@ -19,7 +24,7 @@ export class ActivityLogsController {
     createActivityLogInput.createdById = activityLog.createdById;
     createActivityLogInput.createdByName = activityLog.createdByName;
     createActivityLogInput.action = activityLog.action;
-    
+
     return this.addActivityLogUseCase.execute(createActivityLogInput);
   }
 

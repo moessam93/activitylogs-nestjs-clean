@@ -1,19 +1,24 @@
 # Clean Architecture Implementation
 
 ## Overview
+
 This project now follows proper Clean Architecture principles with clear separation of concerns across different layers.
 
 ## Architecture Layers
 
 ### 1. App Layer (`src/app.module.ts`)
+
 **Purpose**: Composition Root
+
 - **Responsibility**: Wire together all dependencies and modules
 - **Dependencies**: Only imports other layer modules
 - **Key Files**:
   - `app.module.ts` - Main application module and dependency injection root
 
 ### 2. Interface Layer (`src/interface/`)
+
 **Purpose**: External Interfaces (HTTP, Controllers, DTOs)
+
 - **Responsibility**: Handle incoming requests and outgoing responses
 - **Dependencies**: Application layer (use cases)
 - **Key Files**:
@@ -22,7 +27,9 @@ This project now follows proper Clean Architecture principles with clear separat
   - `decorators/` - Custom decorators
 
 ### 3. Application Layer (`src/application/`)
+
 **Purpose**: Business Logic and Use Cases
+
 - **Responsibility**: Orchestrate business operations and enforce business rules
 - **Dependencies**: Domain layer entities and repository interfaces
 - **Key Files**:
@@ -31,7 +38,9 @@ This project now follows proper Clean Architecture principles with clear separat
   - `common/` - Shared application utilities
 
 ### 4. Domain Layer (`src/domain/`)
+
 **Purpose**: Core Business Entities and Rules
+
 - **Responsibility**: Define entities, repository interfaces, business specifications, and enums
 - **Dependencies**: None (pure business logic)
 - **Key Files**:
@@ -39,7 +48,9 @@ This project now follows proper Clean Architecture principles with clear separat
   - `repos/` - Repository interfaces and specifications
 
 ### 5. Infrastructure Layer (`src/infrastructure/`)
+
 **Purpose**: External Concerns (Database, External APIs, File System)
+
 - **Responsibility**: Implement repository interfaces and handle data persistence
 - **Dependencies**: Domain layer interfaces
 - **Key Files**:
@@ -85,22 +96,26 @@ AppModule
 ## Key Principles Followed
 
 ### 1. Dependency Inversion
+
 - Higher-level modules don't depend on lower-level modules
 - Both depend on abstractions (interfaces)
 - Infrastructure implements domain interfaces
 
 ### 2. Single Responsibility
+
 - Each module has a single, well-defined purpose
 - Controllers handle HTTP concerns only
 - Use cases handle business logic only
 - Repositories handle data persistence only
 
 ### 3. Open/Closed Principle
+
 - Open for extension, closed for modification
 - New entities can be added by creating new mappers
 - New use cases can be added without changing existing code
 
 ### 4. Interface Segregation
+
 - Clients depend only on methods they use
 - Repository interfaces are specific to entity needs
 - Mapper interfaces are minimal and focused
@@ -108,21 +123,25 @@ AppModule
 ## Benefits of This Structure
 
 ### ✅ **Testability**
+
 - Each layer can be tested independently
 - Easy to mock dependencies
 - Clear boundaries for unit tests
 
 ### ✅ **Maintainability**
+
 - Clear separation of concerns
 - Changes in one layer don't affect others
 - Easy to locate and modify functionality
 
 ### ✅ **Scalability**
+
 - New features can be added without affecting existing code
 - Easy to add new entities, use cases, or controllers
 - Clear patterns to follow for new development
 
 ### ✅ **Flexibility**
+
 - Can swap out implementations (e.g., MongoDB → PostgreSQL)
 - Can add new interfaces (e.g., GraphQL alongside REST)
 - Framework-agnostic business logic
@@ -132,27 +151,31 @@ AppModule
 ### Adding a New Entity (e.g., `User`)
 
 1. **Domain Layer**:
+
    ```typescript
    // src/domain/entities/user.ts
    export class User { ... }
    ```
 
 2. **Infrastructure Layer**:
+
    ```typescript
    // src/infrastructure/orm/mongoose/schemas/user.schema.ts
    export const UserSchema = new Schema({ ... });
-   
+
    // src/infrastructure/orm/mongoose/mappers/user.mapper.ts
    export class UserMapper implements IBaseMapper<User, UserDocument> { ... }
    ```
 
 3. **Application Layer**:
+
    ```typescript
    // src/application/use-cases/create-user.usecase.ts
    export class CreateUserUseCase { ... }
    ```
 
 4. **Interface Layer**:
+
    ```typescript
    // src/interface/http/controllers/users.controller.ts
    export class UsersController { ... }

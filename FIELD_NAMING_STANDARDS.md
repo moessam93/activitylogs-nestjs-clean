@@ -1,34 +1,37 @@
 # Field Naming Standards
 
 ## Overview
+
 This document establishes the field naming conventions used across all layers of the application.
 
 ## Current Standard: camelCase
 
 All field names use **camelCase** convention consistently across:
+
 - Domain entities
-- Database schemas  
+- Database schemas
 - DTOs and validation
 - API requests/responses
 
 ## ActivityLog Field Names
 
-| Field | Type | Required | Description |
-|-------|------|----------|-------------|
-| `id` | string | Yes | Entity identifier (domain only) |
-| `entityType` | string | Yes | Type of entity being tracked |
-| `entityId` | string | Yes | Unique ID of the tracked entity |
-| `fieldKey` | any | No | The field that was changed |
-| `fieldValueBefore` | any | No | Previous field value |
-| `fieldValueAfter` | any | No | New field value |
-| `createdById` | string | Yes | ID of person who made the change |
-| `createdByName` | string | Yes | Name of person who made the change |
-| `action` | ActionType | Yes | Action performed (POST/PUT/DELETE) |
-| `createdAt` | Date | Yes | Timestamp of change |
+| Field              | Type       | Required | Description                        |
+| ------------------ | ---------- | -------- | ---------------------------------- |
+| `id`               | string     | Yes      | Entity identifier (domain only)    |
+| `entityType`       | string     | Yes      | Type of entity being tracked       |
+| `entityId`         | string     | Yes      | Unique ID of the tracked entity    |
+| `fieldKey`         | any        | No       | The field that was changed         |
+| `fieldValueBefore` | any        | No       | Previous field value               |
+| `fieldValueAfter`  | any        | No       | New field value                    |
+| `createdById`      | string     | Yes      | ID of person who made the change   |
+| `createdByName`    | string     | Yes      | Name of person who made the change |
+| `action`           | ActionType | Yes      | Action performed (POST/PUT/DELETE) |
+| `createdAt`        | Date       | Yes      | Timestamp of change                |
 
 ## Layer Consistency
 
 ### Domain Entity (`ActivityLog`)
+
 ```typescript
 export class ActivityLog {
   id: string;
@@ -40,6 +43,7 @@ export class ActivityLog {
 ```
 
 ### Database Schema (`ActivityLogSchema`)
+
 ```typescript
 export const ActivityLogSchema = new Schema({
   fieldKey: { type: Schema.Types.Mixed, required: false },
@@ -50,12 +54,13 @@ export const ActivityLogSchema = new Schema({
 ```
 
 ### DTO Validation (`CreateActivityLogDto`)
+
 ```typescript
 export class CreateActivityLogDto {
   @IsOptional()
   fieldKey?: any;
 
-  @IsOptional() 
+  @IsOptional()
   fieldValueBefore?: any;
 
   @IsOptional()
@@ -65,6 +70,7 @@ export class CreateActivityLogDto {
 ```
 
 ### API Examples
+
 ```json
 {
   "entityType": "user",
@@ -79,8 +85,9 @@ export class CreateActivityLogDto {
 ## Migration Notes
 
 If you encounter any legacy references to PascalCase field names:
+
 - `FieldKey` → `fieldKey`
-- `FieldValueBefore` → `fieldValueBefore`  
+- `FieldValueBefore` → `fieldValueBefore`
 - `FieldValueAfter` → `fieldValueAfter`
 
 These should be updated to maintain consistency across the codebase.

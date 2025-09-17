@@ -1,13 +1,16 @@
 # Dependency Injection Fix
 
 ## Problem
+
 The application was failing to start with the following error:
+
 ```
-UnknownDependenciesException [Error]: Nest can't resolve dependencies of the AddActivityLogUseCase (?). 
+UnknownDependenciesException [Error]: Nest can't resolve dependencies of the AddActivityLogUseCase (?).
 Please make sure that the argument "IActivityLogRepository" at index [0] is available in the ApplicationModule context.
 ```
 
 ## Root Cause
+
 The issue occurred because of improper module dependency setup in our Clean Architecture implementation:
 
 1. **`IActivityLogRepository`** is provided in the `InfrastructureModule` (via `DatabaseModule`)
@@ -15,9 +18,11 @@ The issue occurred because of improper module dependency setup in our Clean Arch
 3. **`ApplicationModule`** was not importing `InfrastructureModule`, so it couldn't access the repository
 
 ## Solution
+
 Updated the `ApplicationModule` to import the `InfrastructureModule`:
 
 ### Before (Broken)
+
 ```typescript
 @Module({
   providers: [AddActivityLogUseCase],
@@ -27,9 +32,10 @@ export class ApplicationModule {}
 ```
 
 ### After (Fixed)
+
 ```typescript
 @Module({
-  imports: [InfrastructureModule],  // ← Added this import
+  imports: [InfrastructureModule], // ← Added this import
   providers: [AddActivityLogUseCase],
   exports: [AddActivityLogUseCase],
 })
@@ -37,6 +43,7 @@ export class ApplicationModule {}
 ```
 
 ## Clean Architecture Compliance
+
 This fix maintains Clean Architecture principles:
 
 - ✅ **Application layer** depends on **Domain interfaces** (`IBaseRepository`)
@@ -45,6 +52,7 @@ This fix maintains Clean Architecture principles:
 - ✅ **NestJS Dependency Injection** works properly by importing the module that provides the implementation
 
 ## Dependency Flow
+
 ```
 ApplicationModule
 ├── imports: [InfrastructureModule]  # Gets access to repository implementations
@@ -53,7 +61,9 @@ ApplicationModule
 ```
 
 ## Key Learning
+
 In NestJS Clean Architecture:
+
 1. **Domain** defines interfaces (no dependencies)
 2. **Application** imports **Infrastructure** to get implementations of domain interfaces
 3. **Infrastructure** implements domain interfaces
